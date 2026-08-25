@@ -1,0 +1,58 @@
+/* Hero orbital system: the white orb stays fixed; only the purple orb orbits it. */
+.purple-orbit{
+  position:absolute;
+  left:42%;
+  top:60%;
+  width:62%;
+  height:42%;
+  margin:-21% 0 0 -31%;
+  border-radius:50%;
+  transform-origin:center center;
+  z-index:4;
+  animation:purpleOrbit 32s linear infinite;
+  will-change:transform;
+}
+
+.purple-orbit .orb-one{
+  position:absolute;
+  left:0;
+  top:50%;
+  right:auto;
+  bottom:auto;
+  width:22%;
+  height:auto;
+  aspect-ratio:1;
+  margin:-11% 0 0 -11%;
+  z-index:4;
+  animation:purpleDepth 32s ease-in-out infinite;
+  will-change:transform;
+}
+
+/* The orbit itself moves. No point-to-point translate keyframes, so there is no bounce at direction changes. */
+@keyframes purpleOrbit{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+
+/* Subtle depth: smaller at the back, larger at the front. */
+@keyframes purpleDepth{
+  0%,100%{transform:scale(.78)}
+  25%{transform:scale(.96)}
+  50%{transform:scale(1.12)}
+  75%{transform:scale(.96)}
+}
+
+@media(max-width:900px){
+  .purple-orbit{
+    width:62%;
+    height:42%;
+    margin:-21% 0 0 -31%;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .purple-orbit,
+  .purple-orbit .orb-one{
+    animation:none!important;
+  }
+}
