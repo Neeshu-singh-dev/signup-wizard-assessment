@@ -53,9 +53,9 @@
         </div>
 
         <div class="step hidden" data-step="2">
-          <p class="eyebrow">VERIFY EMAIL</p><h1 tabindex="-1">Enter your code</h1><p class="muted">We sent a 6-digit code to <strong id="emailPreview"></strong>.</p>
-          <label class="field-label" for="otp">Verification code</label><input id="otp" class="otp-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required aria-describedby="otpError"><p class="field-error" id="otpError" role="alert"></p>
-          <div class="demo-note">Demo mode: use <strong>123456</strong> to verify.</div>
+          <p class="eyebrow">VERIFY EMAIL</p><h1 tabindex="-1">Enter your code</h1><p class="muted">Enter the 6-digit verification code for <strong id="emailPreview"></strong>.</p>
+          <label class="field-label" for="otp">Verification code</label><input id="otp" class="otp-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required aria-describedby="otpError otpHint"><p class="field-error" id="otpError" role="alert"></p>
+          <div class="demo-note" id="otpHint"><strong>Front-end demo:</strong> email delivery is simulated for this assessment. Use <strong>123456</strong> to verify.</div>
           <button class="btn btn-primary btn-wide next-btn" data-next="3" type="button">Verify &amp; continue <span>→</span></button>
           <button class="text-button" id="resendBtn" type="button">Resend code <span id="resendTimer"></span></button>
         </div>
