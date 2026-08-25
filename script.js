@@ -29,10 +29,7 @@ function setError(input, errorId, message) {
 function focusStep(step) {
   var panel = document.querySelector('.step[data-step="' + step + '"]');
   var heading = panel ? panel.querySelector('h1') : null;
-  if (heading) {
-    heading.setAttribute('tabindex', '-1');
-    heading.focus({ preventScroll: true });
-  }
+  if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus({ preventScroll: true }); }
 }
 function setLoading(button, callback) {
   button.disabled = true;
@@ -48,6 +45,7 @@ function setLoading(button, callback) {
 function updateProgress(step) {
   var pct = step === 'success' ? 100 : step * 25;
   $('progressBar').style.width = pct + '%';
+  $('progressBar').setAttribute('aria-valuenow', String(pct));
   $('progressPercent').textContent = pct + '%';
   $('stepLabel').textContent = step === 'success' ? 'Complete' : 'Step ' + step + ' of 4';
 }
@@ -62,8 +60,7 @@ function goTo(step) {
   setTimeout(function () { focusStep(step); }, 0);
 }
 function validateStep1() {
-  var input = $('email');
-  var value = input.value.trim();
+  var input = $('email'), value = input.value.trim();
   if (!value) return setError(input, 'emailError', 'Email address is required.');
   if (!validEmail(value)) return setError(input, 'emailError', 'Enter a valid email address.');
   data.email = value;
@@ -72,8 +69,7 @@ function validateStep1() {
   return true;
 }
 function validateStep2() {
-  var input = $('otp');
-  var value = input.value.trim();
+  var input = $('otp'), value = input.value.trim();
   if (!/^\d{6}$/.test(value)) return setError(input, 'otpError', 'Enter the 6-digit verification code.');
   if (value !== '123456') return setError(input, 'otpError', 'That code is incorrect. Try 123456 in demo mode.');
   setError(input, 'otpError', '');
@@ -107,30 +103,25 @@ function handleNext(button) {
 
 document.addEventListener('DOMContentLoaded', function () {
   $('startBtn').onclick = function () { show('wizard'); hide('landing'); goTo(1); };
-  $('termsBtn').onclick = function () { show('terms'); hide('landing'); };
+  $('termsBtn').onclick = function () { show('terms'); hide('landing'); $('termsTitle').focus(); };
   $('termsStart').onclick = function () { show('wizard'); hide('terms'); goTo(1); };
   document.querySelectorAll('[data-back]').forEach(function (button) {
-    button.onclick = function () { hide(button.closest('.screen').id); show(button.dataset.back); };
+    button.onclick = function () { hide(button.closest('.screen').id); show(button.dataset.back); $(button.dataset.back === 'landing' ? 'termsBtn' : 'startBtn').focus(); };
   });
   document.querySelectorAll('.next-btn').forEach(function (button) { button.onclick = function () { handleNext(button); }; });
   $('wizardBack').onclick = function () {
-    if (currentStep > 1) goTo(currentStep - 1); else { hide('wizard'); show('landing'); focusStep(1); }
+    if (currentStep > 1) goTo(currentStep - 1); else { hide('wizard'); show('landing'); $('startBtn').focus(); }
   };
   $('exitWizard').onclick = function () { hide('wizard'); show('landing'); $('startBtn').focus(); };
-
   $('email').addEventListener('input', function () {
-    var value = this.value.trim();
-    var valid = validEmail(value);
+    var value = this.value.trim(), valid = validEmail(value);
     $('email').parentElement.classList.toggle('valid', valid);
     if (this.getAttribute('aria-invalid') === 'true') setError(this, 'emailError', valid ? '' : 'Enter a valid email address.');
   });
   $('email').addEventListener('blur', validateStep1);
   $('otp').addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 6); });
   $('age').addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 3); });
-  ['firstName', 'lastName'].forEach(function (id) {
-    $(id).addEventListener('input', function () { this.value = this.value.replace(/\s{2,}/g, ' '); });
-  });
-
+  ['firstName', 'lastName'].forEach(function (id) { $(id).addEventListener('input', function () { this.value = this.value.replace(/\s{2,}/g, ' '); }); });
   $('state').onchange = function () {
     var city = $('city'), college = $('college');
     city.innerHTML = '<option value="">Select a city</option>';
@@ -156,11 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   $('finishBtn').onclick = function () {
     if (!validateStep4()) { toast('Please complete your education details.', true); return; }
-    setLoading(this, function () {
-      $('successName').textContent = data.firstName || 'there';
-      goTo('success');
-      toast('Profile completed successfully!');
-    });
+    setLoading(this, function () { $('successName').textContent = data.firstName || 'there'; goTo('success'); toast('Profile completed successfully!'); });
   };
   $('restartBtn').onclick = function () { location.reload(); };
   $('resendBtn').onclick = function () {
@@ -171,10 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var timer = setInterval(function () {
       resendSeconds--;
       $('resendTimer').textContent = resendSeconds ? '(' + resendSeconds + 's)' : '';
-      if (!resendSeconds) {
-        clearInterval(timer);
-        $('resendBtn').setAttribute('aria-disabled', 'false');
-      }
+      if (!resendSeconds) { clearInterval(timer); $('resendBtn').setAttribute('aria-disabled', 'false'); }
     }, 1000);
   };
 });
