@@ -1,6 +1,7 @@
 var currentStep = 1;
 var resendSeconds = 0;
 var data = { email: '', firstName: '', lastName: '' };
+var demoOtp = '123456';
 
 var cities = { delhi: ['New Delhi'], maharashtra: ['Mumbai', 'Pune'], karnataka: ['Bengaluru'] };
 var colleges = {
@@ -71,7 +72,7 @@ function validateStep1() {
 function validateStep2() {
   var input = $('otp'), value = input.value.trim();
   if (!/^\d{6}$/.test(value)) return setError(input, 'otpError', 'Enter the 6-digit verification code.');
-  if (value !== '123456') return setError(input, 'otpError', 'That code is incorrect. Try 123456 in demo mode.');
+  if (value !== demoOtp) return setError(input, 'otpError', 'That code is incorrect. Try the demo code shown below.');
   setError(input, 'otpError', '');
   return true;
 }
@@ -98,7 +99,10 @@ function validateStep4() {
 function handleNext(button) {
   var valid = currentStep === 1 ? validateStep1() : currentStep === 2 ? validateStep2() : validateStep3();
   if (!valid) { toast('Please check the highlighted fields.', true); return; }
-  setLoading(button, function () { goTo(Number(button.dataset.next)); });
+  setLoading(button, function () {
+    if (currentStep === 1) toast('Verification code ready — email delivery is simulated for this front-end demo.');
+    goTo(Number(button.dataset.next));
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -153,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
   $('resendBtn').onclick = function () {
     if (resendSeconds > 0) return;
     resendSeconds = 30;
-    toast('A new verification code has been sent.');
+    toast('Verification code resent — email delivery is simulated for this front-end demo.');
     $('resendBtn').setAttribute('aria-disabled', 'true');
     var timer = setInterval(function () {
       resendSeconds--;
