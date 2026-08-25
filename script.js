@@ -27,6 +27,10 @@ function setError(input, errorId, message) {
   $(errorId).textContent = message || '';
   return !message;
 }
+function focusInvalid() {
+  var invalid = document.querySelector('.step:not(.hidden) [aria-invalid="true"]');
+  if (invalid) invalid.focus();
+}
 function focusStep(step) {
   var panel = document.querySelector('.step[data-step="' + step + '"]');
   var heading = panel ? panel.querySelector('h1') : null;
@@ -63,7 +67,7 @@ function goTo(step) {
 function validateStep1() {
   var input = $('email'), value = input.value.trim();
   if (!value) return setError(input, 'emailError', 'Email address is required.');
-  if (!validEmail(value)) return setError(input, 'emailError', 'Enter a valid email address.');
+  if (!validEmail(value) || !input.checkValidity()) return setError(input, 'emailError', 'Enter a valid email address.');
   data.email = value;
   setError(input, 'emailError', '');
   $('emailPreview').textContent = value;
@@ -71,7 +75,7 @@ function validateStep1() {
 }
 function validateStep2() {
   var input = $('otp'), value = input.value.trim();
-  if (!/^\d{6}$/.test(value)) return setError(input, 'otpError', 'Enter the 6-digit verification code.');
+  if (!/^\d{6}$/.test(value) || !input.checkValidity()) return setError(input, 'otpError', 'Enter the 6-digit verification code.');
   if (value !== demoOtp) return setError(input, 'otpError', 'That code is incorrect. Try the demo code shown below.');
   setError(input, 'otpError', '');
   return true;
@@ -83,7 +87,7 @@ function validateStep3() {
   ok = setError(last, 'lastNameError', last.value.trim() ? '' : 'Last name is required.') && ok;
   var ageValue = age.value.trim();
   if (!/^\d+$/.test(ageValue)) ok = setError(age, 'ageError', 'Enter your age using numbers only.') && ok;
-  else if (+ageValue < 18) ok = setError(age, 'ageError', 'You must be 18 or older to continue.') && ok;
+  else if (!age.checkValidity() || +ageValue < 18) ok = setError(age, 'ageError', 'You must be 18 or older to continue.') && ok;
   else ok = setError(age, 'ageError', '') && ok;
   ok = setError(pronouns, 'pronounsError', pronouns.value ? '' : 'Please select your pronouns.') && ok;
   if (ok) { data.firstName = first.value.trim(); data.lastName = last.value.trim(); }
@@ -91,14 +95,16 @@ function validateStep3() {
 }
 function validateStep4() {
   var ok = true;
-  ok = setError($('state'), 'stateError', $('state').value ? '' : 'Select a state.') && ok;
-  ok = setError($('city'), 'cityError', $('city').value ? '' : 'Select a city.') && ok;
-  ok = setError($('college'), 'collegeError', $('college').value ? '' : 'Select a college.') && ok;
+  var state = $('state'), city = $('city'), college = $('college');
+  ok = setError(state, 'stateError', state.value ? '' : 'Select a state.') && ok;
+  ok = setError(city, 'cityError', city.value ? '' : 'Select a city.') && ok;
+  ok = setError(college, 'collegeError', college.value ? '' : 'Select a college.') && ok;
+  if (ok && (!state.checkValidity() || !city.checkValidity() || !college.checkValidity())) ok = false;
   return ok;
 }
 function handleNext(button) {
   var valid = currentStep === 1 ? validateStep1() : currentStep === 2 ? validateStep2() : validateStep3();
-  if (!valid) { toast('Please check the highlighted fields.', true); return; }
+  if (!valid) { focusInvalid(); toast('Please check the highlighted fields.', true); return; }
   setLoading(button, function () {
     if (currentStep === 1) toast('Verification code ready — email delivery is simulated for this front-end demo.');
     goTo(Number(button.dataset.next));
@@ -131,9 +137,13 @@ document.addEventListener('DOMContentLoaded', function () {
     city.innerHTML = '<option value="">Select a city</option>';
     college.innerHTML = '<option value="">Select a college</option>';
     college.disabled = true;
+    college.required = false;
+    college.setAttribute('aria-required', 'false');
     college.setAttribute('aria-disabled', 'true');
     (cities[this.value] || []).forEach(function (name) { city.insertAdjacentHTML('beforeend', '<option>' + name + '</option>'); });
     city.disabled = !this.value;
+    city.required = !!this.value;
+    city.setAttribute('aria-required', this.value ? 'true' : 'false');
     city.setAttribute('aria-disabled', this.value ? 'false' : 'true');
     city.setAttribute('aria-invalid', 'false');
     college.setAttribute('aria-invalid', 'false');
@@ -145,24 +155,32 @@ document.addEventListener('DOMContentLoaded', function () {
     college.innerHTML = '<option value="">Select a college</option>';
     (colleges[state + '|' + this.value] || []).forEach(function (name) { college.insertAdjacentHTML('beforeend', '<option>' + name + '</option>'); });
     college.disabled = !this.value;
+    college.required = !!this.value;
+    college.setAttribute('aria-required', this.value ? 'true' : 'false');
     college.setAttribute('aria-disabled', this.value ? 'false' : 'true');
     college.setAttribute('aria-invalid', 'false');
     $('collegeError').textContent = '';
   };
   $('finishBtn').onclick = function () {
-    if (!validateStep4()) { toast('Please complete your education details.', true); return; }
+    if (!validateStep4()) { focusInvalid(); toast('Please complete your education details.', true); return; }
     setLoading(this, function () { $('successName').textContent = data.firstName || 'there'; goTo('success'); toast('Profile completed successfully!'); });
   };
   $('restartBtn').onclick = function () { location.reload(); };
   $('resendBtn').onclick = function () {
     if (resendSeconds > 0) return;
     resendSeconds = 30;
-    toast('Verification code resent — email delivery is simulated for this front-end demo.');
+    $('resendBtn').disabled = true;
     $('resendBtn').setAttribute('aria-disabled', 'true');
+    $('resendTimer').textContent = '(30s)';
+    toast('Verification code resent — email delivery is simulated for this front-end demo.');
     var timer = setInterval(function () {
       resendSeconds--;
       $('resendTimer').textContent = resendSeconds ? '(' + resendSeconds + 's)' : '';
-      if (!resendSeconds) { clearInterval(timer); $('resendBtn').setAttribute('aria-disabled', 'false'); }
+      if (!resendSeconds) {
+        clearInterval(timer);
+        $('resendBtn').disabled = false;
+        $('resendBtn').setAttribute('aria-disabled', 'false');
+      }
     }, 1000);
   };
 });
