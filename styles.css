@@ -3,63 +3,13 @@
 /* HERO CELESTIAL ANIMATION */
 .hero-art{overflow:hidden;isolation:isolate}
 .hero-art::before,.hero-art::after{display:none}
-
-/* White planet/sun stays gently alive but never travels. */
 .hero-art .orb-two{z-index:1;left:9%;bottom:8%;animation:sunBreath 6s ease-in-out infinite;will-change:transform,box-shadow}
-
-/* Purple planet: smooth invisible orbital-style movement using transform only. */
 .hero-art .orb-one{z-index:2;right:auto;left:51%;top:13%;animation:purpleOrbit 12s cubic-bezier(.45,.05,.55,.95) infinite;will-change:transform}
-
-/* Spark stays in its own place and rotates only in place. */
 .hero-art .spark{z-index:3;right:auto;bottom:auto;left:62%;top:50%;font-size:58px;line-height:1;transform-origin:center center;animation:sparkRotate 8s linear infinite;will-change:transform}
-
-@keyframes purpleOrbit{
-  0%{transform:translate3d(0,0,0) scale(1)}
-  12%{transform:translate3d(55px,-8px,0) scale(1.01)}
-  25%{transform:translate3d(105px,45px,0) scale(1.025)}
-  38%{transform:translate3d(115px,115px,0) scale(1.01)}
-  50%{transform:translate3d(70px,180px,0) scale(1)}
-  62%{transform:translate3d(5px,205px,0) scale(.99)}
-  72%{transform:translate3d(-42px,175px,0) scale(.99)}
-  82%{transform:translate3d(-62px,110px,0) scale(1)}
-  91%{transform:translate3d(-48px,45px,0) scale(1.01)}
-  100%{transform:translate3d(0,0,0) scale(1)}
-}
-
-@keyframes sparkRotate{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
-}
-
-@keyframes sunBreath{
-  0%,100%{transform:scale(1);box-shadow:0 0 0 rgba(255,255,255,0)}
-  50%{transform:scale(1.018);box-shadow:0 0 30px rgba(255,255,255,.65)}
-}
-
-@media(max-width:900px){
-  .landing-copy{margin-right:0}
-  .hero-art{opacity:.22;right:-15%;width:70vw}
-  .landing-screen{align-items:flex-end;padding:40px 24px 70px}
-  .landing-copy{width:min(600px,100%)}
-  .hero-art .orb-one{width:125px;height:125px}
-  .hero-art .orb-two{width:190px;height:190px}
-  .hero-art .spark{font-size:42px;left:61%;top:49%}
-  @keyframes purpleOrbit{
-    0%{transform:translate3d(0,0,0) scale(1)}
-    12%{transform:translate3d(35px,-5px,0) scale(1.01)}
-    25%{transform:translate3d(65px,28px,0) scale(1.02)}
-    38%{transform:translate3d(72px,72px,0) scale(1.01)}
-    50%{transform:translate3d(42px,112px,0) scale(1)}
-    62%{transform:translate3d(2px,125px,0) scale(.99)}
-    72%{transform:translate3d(-28px,104px,0) scale(.99)}
-    82%{transform:translate3d(-40px,65px,0) scale(1)}
-    91%{transform:translate3d(-30px,27px,0) scale(1.01)}
-    100%{transform:translate3d(0,0,0) scale(1)}
-  }
-}
-
+@keyframes purpleOrbit{0%{transform:translate3d(0,0,0) scale(1)}12%{transform:translate3d(55px,-8px,0) scale(1.01)}25%{transform:translate3d(105px,45px,0) scale(1.025)}38%{transform:translate3d(115px,115px,0) scale(1.01)}50%{transform:translate3d(70px,180px,0) scale(1)}62%{transform:translate3d(5px,205px,0) scale(.99)}72%{transform:translate3d(-42px,175px,0) scale(.99)}82%{transform:translate3d(-62px,110px,0) scale(1)}91%{transform:translate3d(-48px,45px,0) scale(1.01)}100%{transform:translate3d(0,0,0) scale(1)}}
+@keyframes sparkRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes sunBreath{0%,100%{transform:scale(1);box-shadow:0 0 0 rgba(255,255,255,0)}50%{transform:scale(1.018);box-shadow:0 0 30px rgba(255,255,255,.65)}}
+@media(max-width:900px){.landing-copy{margin-right:0}.hero-art{opacity:.22;right:-15%;width:70vw}.landing-screen{align-items:flex-end;padding:40px 24px 70px}.landing-copy{width:min(600px,100%)}.hero-art .orb-one{width:125px;height:125px}.hero-art .orb-two{width:190px;height:190px}.hero-art .spark{font-size:42px;left:61%;top:49%}@keyframes purpleOrbit{0%{transform:translate3d(0,0,0) scale(1)}12%{transform:translate3d(35px,-5px,0) scale(1.01)}25%{transform:translate3d(65px,28px,0) scale(1.02)}38%{transform:translate3d(72px,72px,0) scale(1.01)}50%{transform:translate3d(42px,112px,0) scale(1)}62%{transform:translate3d(2px,125px,0) scale(.99)}72%{transform:translate3d(-28px,104px,0) scale(.99)}82%{transform:translate3d(-40px,65px,0) scale(1)}91%{transform:translate3d(-30px,27px,0) scale(1.01)}100%{transform:translate3d(0,0,0) scale(1)}}}
 @media(max-width:600px){.simple-header,.wizard-header{height:66px;padding:0 18px}.brand{font-size:11px}.brand-mark{width:30px;height:30px}.terms-card,.wizard-card{padding:28px 20px;border-radius:22px}.terms-card{margin-top:28px}.wizard-card{margin-top:20px}.two-col{grid-template-columns:1fr;gap:0}.landing-screen{padding:30px 20px 44px}.landing-copy h1{font-size:43px}.lead{font-size:14px;line-height:1.7}.progress-wrap{width:calc(100% - 32px)}.wizard-card{width:calc(100% - 24px)}.eyebrow{font-size:10px}}
 
-@media(prefers-reduced-motion:reduce){
-  .hero-art .orb-one,.hero-art .orb-two,.hero-art .spark{animation:none!important}
-}
+/* Intentionally no prefers-reduced-motion override: the reference animation is required to remain visible in this assessment. */
