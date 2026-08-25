@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Responsive four-step signup wizard assessment">
+  <title>Join Nubpack — Signup Wizard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <main id="app" class="app-shell">
+    <section id="landing" class="screen landing-screen">
+      <div class="hero-art" aria-hidden="true"><span class="orb orb-one"></span><span class="orb orb-two"></span><span class="spark">✦</span></div>
+      <div class="landing-copy">
+        <div class="brand"><span class="brand-mark">N</span><span>NUBPACK</span></div>
+        <p class="eyebrow">WELCOME ABOARD</p>
+        <h1>Build your profile.<br><span>Find your people.</span></h1>
+        <p class="lead">Create your account in a few simple steps. Verify your email, tell us a little about yourself, and complete your profile.</p>
+        <button class="btn btn-primary btn-wide" id="startBtn">Get started <span>→</span></button>
+        <button class="text-button" id="termsBtn">Terms &amp; Conditions</button>
+      </div>
+    </section>
+
+    <section id="terms" class="screen page-screen hidden">
+      <header class="simple-header"><button class="icon-button" data-back="landing" aria-label="Back">←</button><div class="brand compact"><span class="brand-mark">N</span><span>NUBPACK</span></div><span></span></header>
+      <article class="terms-card">
+        <p class="eyebrow">LEGAL</p><h1>Terms &amp; Conditions</h1>
+        <p class="muted">Please review these terms before creating your account.</p>
+        <div class="terms-body">
+          <h2>1. Using the service</h2><p>By creating an account, you agree to provide accurate information and use the service responsibly. You are responsible for activity performed through your account.</p>
+          <h2>2. Your information</h2><p>We use the details you provide to create and maintain your profile and to provide the requested experience. Do not submit information that belongs to another person without permission.</p>
+          <h2>3. Verification</h2><p>Email verification may be required before your profile can be completed. Verification codes are temporary and should not be shared.</p>
+          <h2>4. Changes</h2><p>These terms may be updated when the service changes. Continued use after an update indicates acceptance of the revised terms.</p>
+        </div>
+        <button class="btn btn-primary btn-wide" id="termsStart">I agree &amp; continue</button>
+      </article>
+    </section>
+
+    <section id="wizard" class="screen page-screen hidden">
+      <header class="wizard-header"><button class="icon-button" id="wizardBack" aria-label="Back">←</button><div class="brand compact"><span class="brand-mark">N</span><span>NUBPACK</span></div><button class="text-button small" id="exitWizard">Exit</button></header>
+      <div class="progress-wrap"><div class="progress-meta"><span id="stepLabel">Step 1 of 4</span><span id="progressPercent">25%</span></div><div class="progress-track"><div id="progressBar" class="progress-bar"></div></div></div>
+
+      <div class="wizard-card">
+        <div class="step" data-step="1">
+          <p class="eyebrow">LET'S BEGIN</p><h1>What's your email?</h1><p class="muted">We'll send a one-time verification code to confirm it's really you.</p>
+          <label class="field-label" for="email">Email address</label><div class="input-wrap"><input id="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="120"><span class="valid-icon" id="emailValid">✓</span></div><p class="field-error" id="emailError"></p>
+          <div class="hint">Use an email address you can access right now.</div>
+          <button class="btn btn-primary btn-wide next-btn" data-next="2">Send verification code <span>→</span></button>
+        </div>
+
+        <div class="step hidden" data-step="2">
+          <p class="eyebrow">VERIFY EMAIL</p><h1>Enter your code</h1><p class="muted">We sent a 6-digit code to <strong id="emailPreview"></strong>.</p>
+          <label class="field-label" for="otp">Verification code</label><input id="otp" class="otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"><p class="field-error" id="otpError"></p>
+          <div class="demo-note">Demo mode: use <strong>123456</strong> to verify.</div>
+          <button class="btn btn-primary btn-wide next-btn" data-next="3">Verify &amp; continue <span>→</span></button>
+          <button class="text-button" id="resendBtn">Resend code <span id="resendTimer"></span></button>
+        </div>
+
+        <div class="step hidden" data-step="3">
+          <p class="eyebrow">ABOUT YOU</p><h1>Tell us about yourself</h1><p class="muted">A few details help us personalize your profile.</p>
+          <div class="two-col">
+            <div><label class="field-label" for="firstName">First name</label><input id="firstName" maxlength="30" autocomplete="given-name" placeholder="First name"><p class="field-error" id="firstNameError"></p></div>
+            <div><label class="field-label" for="lastName">Last name</label><input id="lastName" maxlength="30" autocomplete="family-name" placeholder="Last name"><p class="field-error" id="lastNameError"></p></div>
+          </div>
+          <div class="two-col">
+            <div><label class="field-label" for="age">Age</label><input id="age" inputmode="numeric" maxlength="3" placeholder="18+"><p class="field-error" id="ageError"></p></div>
+            <div><label class="field-label" for="pronouns">Pronouns</label><select id="pronouns"><option value="">Select</option><option>She / Her</option><option>He / Him</option><option>They / Them</option><option>Prefer not to say</option></select><p class="field-error" id="pronounsError"></p></div>
+          </div>
+          <button class="btn btn-primary btn-wide next-btn" data-next="4">Continue <span>→</span></button>
+        </div>
+
+        <div class="step hidden" data-step="4">
+          <p class="eyebrow">COMPLETE PROFILE</p><h1>Where do you study?</h1><p class="muted">Choose your location and college. The options update as you make a selection.</p>
+          <label class="field-label" for="state">State</label><select id="state"><option value="">Select a state</option><option value="delhi">Delhi</option><option value="maharashtra">Maharashtra</option><option value="karnataka">Karnataka</option></select><p class="field-error" id="stateError"></p>
+          <label class="field-label" for="city">City</label><select id="city" disabled><option value="">Select a city</option></select><p class="field-error" id="cityError"></p>
+          <label class="field-label" for="college">College</label><select id="college" disabled><option value="">Select a college</option></select><p class="field-error" id="collegeError"></p>
+          <button class="btn btn-primary btn-wide" id="finishBtn">Complete profile <span>✓</span></button>
+        </div>
+
+        <div class="step hidden" data-step="success">
+          <div class="success-icon">✓</div><p class="eyebrow">ALL SET</p><h1>Profile completed!</h1><p class="muted">Your signup is complete. Welcome to Nubpack, <strong id="successName">there</strong>.</p>
+          <button class="btn btn-primary btn-wide" id="restartBtn">Start again</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
