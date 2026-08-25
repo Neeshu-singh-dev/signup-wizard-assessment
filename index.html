@@ -47,37 +47,37 @@
       <div class="wizard-card">
         <div class="step" data-step="1">
           <p class="eyebrow">LET'S BEGIN</p><h1 id="wizardTitle" tabindex="-1">What's your email?</h1><p class="muted">We'll send a one-time verification code to confirm it's really you.</p>
-          <label class="field-label" for="email">Email address</label><div class="input-wrap"><input id="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="120" required aria-describedby="emailError emailHint"><span class="valid-icon" aria-hidden="true">✓</span></div><p class="field-error" id="emailError" role="alert"></p>
+          <label class="field-label" for="email">Email address</label><div class="input-wrap"><input id="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="120" required aria-required="true" aria-describedby="emailError emailHint"><span class="valid-icon" aria-hidden="true">✓</span></div><p class="field-error" id="emailError" role="alert"></p>
           <div class="hint" id="emailHint">Use an email address you can access right now.</div>
           <button class="btn btn-primary btn-wide next-btn" data-next="2" type="button">Send verification code <span>→</span></button>
         </div>
 
         <div class="step hidden" data-step="2">
           <p class="eyebrow">VERIFY EMAIL</p><h1 tabindex="-1">Enter your code</h1><p class="muted">Enter the 6-digit verification code for <strong id="emailPreview"></strong>.</p>
-          <label class="field-label" for="otp">Verification code</label><input id="otp" class="otp-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required aria-describedby="otpError otpHint"><p class="field-error" id="otpError" role="alert"></p>
+          <label class="field-label" for="otp">Verification code</label><input id="otp" class="otp-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required aria-required="true" aria-describedby="otpError otpHint"><p class="field-error" id="otpError" role="alert"></p>
           <div class="demo-note" id="otpHint"><strong>Front-end demo:</strong> email delivery is simulated for this assessment. Use <strong>123456</strong> to verify.</div>
           <button class="btn btn-primary btn-wide next-btn" data-next="3" type="button">Verify &amp; continue <span>→</span></button>
-          <button class="text-button" id="resendBtn" type="button">Resend code <span id="resendTimer"></span></button>
+          <button class="text-button" id="resendBtn" type="button" aria-disabled="false">Resend code <span id="resendTimer"></span></button>
         </div>
 
         <div class="step hidden" data-step="3">
           <p class="eyebrow">ABOUT YOU</p><h1 tabindex="-1">Tell us about yourself</h1><p class="muted">A few details help us personalize your profile.</p>
           <div class="two-col">
-            <div><label class="field-label" for="firstName">First name</label><input id="firstName" maxlength="30" autocomplete="given-name" placeholder="First name" required aria-describedby="firstNameError"><p class="field-error" id="firstNameError" role="alert"></p></div>
-            <div><label class="field-label" for="lastName">Last name</label><input id="lastName" maxlength="30" autocomplete="family-name" placeholder="Last name" required aria-describedby="lastNameError"><p class="field-error" id="lastNameError" role="alert"></p></div>
+            <div><label class="field-label" for="firstName">First name</label><input id="firstName" maxlength="30" autocomplete="given-name" placeholder="First name" required aria-required="true" aria-describedby="firstNameError"><p class="field-error" id="firstNameError" role="alert"></p></div>
+            <div><label class="field-label" for="lastName">Last name</label><input id="lastName" maxlength="30" autocomplete="family-name" placeholder="Last name" required aria-required="true" aria-describedby="lastNameError"><p class="field-error" id="lastNameError" role="alert"></p></div>
           </div>
           <div class="two-col">
-            <div><label class="field-label" for="age">Age</label><input id="age" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{2,3}" min="18" placeholder="18+" required aria-describedby="ageError"><p class="field-error" id="ageError" role="alert"></p></div>
-            <div><label class="field-label" for="pronouns">Pronouns</label><select id="pronouns" required aria-describedby="pronounsError"><option value="">Select</option><option>She / Her</option><option>He / Him</option><option>They / Them</option><option>Prefer not to say</option></select><p class="field-error" id="pronounsError" role="alert"></p></div>
+            <div><label class="field-label" for="age">Age</label><input id="age" type="number" inputmode="numeric" maxlength="3" min="18" max="120" step="1" placeholder="18+" required aria-required="true" aria-describedby="ageError"><p class="field-error" id="ageError" role="alert"></p></div>
+            <div><label class="field-label" for="pronouns">Pronouns</label><select id="pronouns" required aria-required="true" aria-describedby="pronounsError"><option value="">Select</option><option>She / Her</option><option>He / Him</option><option>They / Them</option><option>Prefer not to say</option></select><p class="field-error" id="pronounsError" role="alert"></p></div>
           </div>
           <button class="btn btn-primary btn-wide next-btn" data-next="4" type="button">Continue <span>→</span></button>
         </div>
 
         <div class="step hidden" data-step="4">
           <p class="eyebrow">COMPLETE PROFILE</p><h1 tabindex="-1">Where do you study?</h1><p class="muted">Choose your location and college. The options update as you make a selection.</p>
-          <label class="field-label" for="state">State</label><select id="state" required aria-describedby="stateError"><option value="">Select a state</option><option value="delhi">Delhi</option><option value="maharashtra">Maharashtra</option><option value="karnataka">Karnataka</option></select><p class="field-error" id="stateError" role="alert"></p>
-          <label class="field-label" for="city">City</label><select id="city" disabled required aria-disabled="true" aria-describedby="cityError"><option value="">Select a city</option></select><p class="field-error" id="cityError" role="alert"></p>
-          <label class="field-label" for="college">College</label><select id="college" disabled required aria-disabled="true" aria-describedby="collegeError"><option value="">Select a college</option></select><p class="field-error" id="collegeError" role="alert"></p>
+          <label class="field-label" for="state">State</label><select id="state" required aria-required="true" aria-describedby="stateError"><option value="">Select a state</option><option value="delhi">Delhi</option><option value="maharashtra">Maharashtra</option><option value="karnataka">Karnataka</option></select><p class="field-error" id="stateError" role="alert"></p>
+          <label class="field-label" for="city">City</label><select id="city" disabled required aria-required="true" aria-disabled="true" aria-describedby="cityError"><option value="">Select a city</option></select><p class="field-error" id="cityError" role="alert"></p>
+          <label class="field-label" for="college">College</label><select id="college" disabled required aria-required="true" aria-disabled="true" aria-describedby="collegeError"><option value="">Select a college</option></select><p class="field-error" id="collegeError" role="alert"></p>
           <button class="btn btn-primary btn-wide" id="finishBtn" type="button">Complete profile <span>✓</span></button>
         </div>
 
