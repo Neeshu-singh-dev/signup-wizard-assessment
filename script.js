@@ -1,5 +1,6 @@
 var currentStep = 1;
 var resendSeconds = 0;
+var isTransitioning = false;
 var data = { email: '', firstName: '', lastName: '' };
 var demoOtp = '123456';
 
@@ -34,9 +35,14 @@ function focusInvalid() {
 function focusStep(step) {
   var panel = document.querySelector('.step[data-step="' + step + '"]');
   var heading = panel ? panel.querySelector('h1') : null;
-  if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus({ preventScroll: true }); }
+  if (heading) {
+    heading.setAttribute('tabindex', '-1');
+    heading.focus({ preventScroll: true });
+  }
 }
 function setLoading(button, callback) {
+  if (isTransitioning) return;
+  isTransitioning = true;
   button.disabled = true;
   button.setAttribute('aria-busy', 'true');
   button.classList.add('loading');
@@ -44,6 +50,7 @@ function setLoading(button, callback) {
     button.disabled = false;
     button.removeAttribute('aria-busy');
     button.classList.remove('loading');
+    isTransitioning = false;
     callback();
   }, 650);
 }
@@ -103,6 +110,7 @@ function validateStep4() {
   return ok;
 }
 function handleNext(button) {
+  if (isTransitioning) return;
   var valid = currentStep === 1 ? validateStep1() : currentStep === 2 ? validateStep2() : validateStep3();
   if (!valid) { focusInvalid(); toast('Please check the highlighted fields.', true); return; }
   setLoading(button, function () {
@@ -110,26 +118,54 @@ function handleNext(button) {
     goTo(Number(button.dataset.next));
   });
 }
+function resetDependentSelects() {
+  var city = $('city'), college = $('college');
+  city.innerHTML = '<option value="">Select a city</option>';
+  college.innerHTML = '<option value="">Select a college</option>';
+  city.value = '';
+  college.value = '';
+  city.disabled = true;
+  college.disabled = true;
+  city.required = false;
+  college.required = false;
+  city.setAttribute('aria-required', 'false');
+  college.setAttribute('aria-required', 'false');
+  city.setAttribute('aria-disabled', 'true');
+  college.setAttribute('aria-disabled', 'true');
+  setError(city, 'cityError', '');
+  setError(college, 'collegeError', '');
+}
 
 document.addEventListener('DOMContentLoaded', function () {
-  $('startBtn').onclick = function () { show('wizard'); hide('landing'); goTo(1); };
-  $('termsBtn').onclick = function () { show('terms'); hide('landing'); $('termsTitle').focus(); };
-  $('termsStart').onclick = function () { show('wizard'); hide('terms'); goTo(1); };
+  $('startBtn').onclick = function () { if (!isTransitioning) { show('wizard'); hide('landing'); goTo(1); } };
+  $('termsBtn').onclick = function () { if (!isTransitioning) { show('terms'); hide('landing'); $('termsTitle').focus(); } };
+  $('termsStart').onclick = function () { if (!isTransitioning) { show('wizard'); hide('terms'); goTo(1); } };
   document.querySelectorAll('[data-back]').forEach(function (button) {
-    button.onclick = function () { hide(button.closest('.screen').id); show(button.dataset.back); $(button.dataset.back === 'landing' ? 'termsBtn' : 'startBtn').focus(); };
+    button.onclick = function () {
+      if (isTransitioning) return;
+      hide(button.closest('.screen').id);
+      show(button.dataset.back);
+      $(button.dataset.back === 'landing' ? 'termsBtn' : 'startBtn').focus();
+    };
   });
   document.querySelectorAll('.next-btn').forEach(function (button) { button.onclick = function () { handleNext(button); }; });
   $('wizardBack').onclick = function () {
-    if (currentStep > 1) goTo(currentStep - 1); else { hide('wizard'); show('landing'); $('startBtn').focus(); }
+    if (isTransitioning) return;
+    if (currentStep === 'success') goTo(4);
+    else if (currentStep > 1) goTo(currentStep - 1);
+    else { hide('wizard'); show('landing'); $('startBtn').focus(); }
   };
-  $('exitWizard').onclick = function () { hide('wizard'); show('landing'); $('startBtn').focus(); };
+  $('exitWizard').onclick = function () { if (!isTransitioning) { hide('wizard'); show('landing'); $('startBtn').focus(); } };
   $('email').addEventListener('input', function () {
     var value = this.value.trim(), valid = validEmail(value);
     $('email').parentElement.classList.toggle('valid', valid);
     if (this.getAttribute('aria-invalid') === 'true') setError(this, 'emailError', valid ? '' : 'Enter a valid email address.');
   });
   $('email').addEventListener('blur', validateStep1);
-  $('otp').addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 6); });
+  $('otp').addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    if (this.getAttribute('aria-invalid') === 'true' && this.value.length === 6) setError(this, 'otpError', '');
+  });
   $('age').addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 3); });
   ['firstName', 'lastName'].forEach(function (id) { $(id).addEventListener('input', function () { this.value = this.value.replace(/\s{2,}/g, ' '); }); });
   $('state').onchange = function () {
@@ -145,10 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
     city.required = !!this.value;
     city.setAttribute('aria-required', this.value ? 'true' : 'false');
     city.setAttribute('aria-disabled', this.value ? 'false' : 'true');
-    city.setAttribute('aria-invalid', 'false');
-    college.setAttribute('aria-invalid', 'false');
-    $('cityError').textContent = '';
-    $('collegeError').textContent = '';
+    setError(city, 'cityError', '');
+    setError(college, 'collegeError', '');
   };
   $('city').onchange = function () {
     var state = $('state').value, college = $('college');
@@ -158,16 +192,20 @@ document.addEventListener('DOMContentLoaded', function () {
     college.required = !!this.value;
     college.setAttribute('aria-required', this.value ? 'true' : 'false');
     college.setAttribute('aria-disabled', this.value ? 'false' : 'true');
-    college.setAttribute('aria-invalid', 'false');
-    $('collegeError').textContent = '';
+    setError(college, 'collegeError', '');
   };
   $('finishBtn').onclick = function () {
+    if (isTransitioning) return;
     if (!validateStep4()) { focusInvalid(); toast('Please complete your education details.', true); return; }
-    setLoading(this, function () { $('successName').textContent = data.firstName || 'there'; goTo('success'); toast('Profile completed successfully!'); });
+    setLoading(this, function () {
+      $('successName').textContent = data.firstName || 'there';
+      goTo('success');
+      toast('Profile completed successfully!');
+    });
   };
-  $('restartBtn').onclick = function () { location.reload(); };
+  $('restartBtn').onclick = function () { if (!isTransitioning) location.reload(); };
   $('resendBtn').onclick = function () {
-    if (resendSeconds > 0) return;
+    if (resendSeconds > 0 || isTransitioning) return;
     resendSeconds = 30;
     $('resendBtn').disabled = true;
     $('resendBtn').setAttribute('aria-disabled', 'true');
