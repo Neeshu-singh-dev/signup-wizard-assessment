@@ -137,6 +137,10 @@ function resetDependentSelects() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  var orbitStyle = document.createElement('style');
+  orbitStyle.textContent = '@keyframes purpleSmoothOrbit{from{transform:rotate(0deg) translateX(205px) rotate(0deg)}to{transform:rotate(360deg) translateX(205px) rotate(-360deg)}}.hero-art .orb-one{animation:purpleSmoothOrbit 32s linear infinite!important;transform-origin:center center}@media(max-width:900px){@keyframes purpleSmoothOrbit{from{transform:rotate(0deg) translateX(145px) rotate(0deg)}to{transform:rotate(360deg) translateX(145px) rotate(-360deg)}}}';
+  document.head.appendChild(orbitStyle);
+
   $('startBtn').onclick = function () { if (!isTransitioning) { show('wizard'); hide('landing'); goTo(1); } };
   $('termsBtn').onclick = function () { if (!isTransitioning) { show('terms'); hide('landing'); $('termsTitle').focus(); } };
   $('termsStart').onclick = function () { if (!isTransitioning) { show('wizard'); hide('terms'); goTo(1); } };
