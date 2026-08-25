@@ -2,11 +2,7 @@ var currentStep = 1;
 var resendSeconds = 0;
 var data = { email: '', firstName: '', lastName: '' };
 
-var cities = {
-  delhi: ['New Delhi'],
-  maharashtra: ['Mumbai', 'Pune'],
-  karnataka: ['Bengaluru']
-};
+var cities = { delhi: ['New Delhi'], maharashtra: ['Mumbai', 'Pune'], karnataka: ['Bengaluru'] };
 var colleges = {
   'delhi|New Delhi': ['Delhi University', 'Jawaharlal Nehru University'],
   'maharashtra|Mumbai': ['University of Mumbai', 'NMIMS'],
@@ -30,10 +26,24 @@ function setError(input, errorId, message) {
   $(errorId).textContent = message || '';
   return !message;
 }
+function focusStep(step) {
+  var panel = document.querySelector('.step[data-step="' + step + '"]');
+  var heading = panel ? panel.querySelector('h1') : null;
+  if (heading) {
+    heading.setAttribute('tabindex', '-1');
+    heading.focus({ preventScroll: true });
+  }
+}
 function setLoading(button, callback) {
   button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
   button.classList.add('loading');
-  setTimeout(function () { button.disabled = false; button.classList.remove('loading'); callback(); }, 650);
+  setTimeout(function () {
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+    button.classList.remove('loading');
+    callback();
+  }, 650);
 }
 function updateProgress(step) {
   var pct = step === 'success' ? 100 : step * 25;
@@ -43,10 +53,13 @@ function updateProgress(step) {
 }
 function goTo(step) {
   document.querySelectorAll('.step').forEach(function (el) { el.classList.add('hidden'); });
-  document.querySelector('.step[data-step="' + step + '"]').classList.remove('hidden');
+  var target = document.querySelector('.step[data-step="' + step + '"]');
+  if (!target) return;
+  target.classList.remove('hidden');
   currentStep = step;
   updateProgress(step);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(function () { focusStep(step); }, 0);
 }
 function validateStep1() {
   var input = $('email');
@@ -101,9 +114,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.querySelectorAll('.next-btn').forEach(function (button) { button.onclick = function () { handleNext(button); }; });
   $('wizardBack').onclick = function () {
-    if (currentStep > 1) goTo(currentStep - 1); else { hide('wizard'); show('landing'); }
+    if (currentStep > 1) goTo(currentStep - 1); else { hide('wizard'); show('landing'); focusStep(1); }
   };
-  $('exitWizard').onclick = function () { hide('wizard'); show('landing'); };
+  $('exitWizard').onclick = function () { hide('wizard'); show('landing'); $('startBtn').focus(); };
 
   $('email').addEventListener('input', function () {
     var value = this.value.trim();
@@ -123,14 +136,23 @@ document.addEventListener('DOMContentLoaded', function () {
     city.innerHTML = '<option value="">Select a city</option>';
     college.innerHTML = '<option value="">Select a college</option>';
     college.disabled = true;
+    college.setAttribute('aria-disabled', 'true');
     (cities[this.value] || []).forEach(function (name) { city.insertAdjacentHTML('beforeend', '<option>' + name + '</option>'); });
     city.disabled = !this.value;
+    city.setAttribute('aria-disabled', this.value ? 'false' : 'true');
+    city.setAttribute('aria-invalid', 'false');
+    college.setAttribute('aria-invalid', 'false');
+    $('cityError').textContent = '';
+    $('collegeError').textContent = '';
   };
   $('city').onchange = function () {
     var state = $('state').value, college = $('college');
     college.innerHTML = '<option value="">Select a college</option>';
     (colleges[state + '|' + this.value] || []).forEach(function (name) { college.insertAdjacentHTML('beforeend', '<option>' + name + '</option>'); });
     college.disabled = !this.value;
+    college.setAttribute('aria-disabled', this.value ? 'false' : 'true');
+    college.setAttribute('aria-invalid', 'false');
+    $('collegeError').textContent = '';
   };
   $('finishBtn').onclick = function () {
     if (!validateStep4()) { toast('Please complete your education details.', true); return; }
@@ -145,10 +167,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (resendSeconds > 0) return;
     resendSeconds = 30;
     toast('A new verification code has been sent.');
+    $('resendBtn').setAttribute('aria-disabled', 'true');
     var timer = setInterval(function () {
       resendSeconds--;
       $('resendTimer').textContent = resendSeconds ? '(' + resendSeconds + 's)' : '';
-      if (!resendSeconds) clearInterval(timer);
+      if (!resendSeconds) {
+        clearInterval(timer);
+        $('resendBtn').setAttribute('aria-disabled', 'false');
+      }
     }, 1000);
   };
 });
